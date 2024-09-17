@@ -4,8 +4,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8080
+EXPOSE 8081
 
 
 # This stage is used to build the service project
@@ -13,6 +13,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/Reservation.Api/Reservation.Api.csproj", "src/Reservation.Api/"]
+COPY ["src/Reservation.Application/Reservation.Application.csproj", "src/Reservation.Application/"]
+COPY ["src/Reservation.Domain/Reservation.Domain.csproj", "src/Reservation.Domain/"]
+COPY ["src/Reservation.Infrastructure/Reservation.Infrastructure.csproj", "src/Reservation.Infrastructure/"]
 RUN dotnet restore "./src/Reservation.Api/Reservation.Api.csproj"
 COPY . .
 WORKDIR "/src/src/Reservation.Api"

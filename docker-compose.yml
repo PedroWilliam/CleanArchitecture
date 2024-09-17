@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  reservation.api:
+    image: ${DOCKER_REGISTRY-}reservationapi
+    container_name: Reservation.Api
+    build:
+      context: .
+      dockerfile: src/Reservation.Api/Dockerfile
+    depends_on:
+      - reservation-db
+
+  reservation-db:
+    image: postgres:latest
+    container_name: Reservation.Db
+    environment:
+      - POSTGRES_DB=reservation
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./.containers/database:/var/lib/postgresql/data
+    ports:
+      - 5432:5432

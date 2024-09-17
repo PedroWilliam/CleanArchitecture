@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reservation.Application", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reservation.Infrastructure", "src\Reservation.Infrastructure\Reservation.Infrastructure.csproj", "{E1F6D7ED-E84E-478D-8387-BB41784B1E18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reservation.Api", "src\Reservation.Api\Reservation.Api.csproj", "{22DAC9C4-CC27-4455-8A3D-099B503BD3F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reservation.Api", "src\Reservation.Api\Reservation.Api.csproj", "{22DAC9C4-CC27-4455-8A3D-099B503BD3F1}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2CB53B0D-85D5-43E2-9F47-EEE42C1514AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{22DAC9C4-CC27-4455-8A3D-099B503BD3F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22DAC9C4-CC27-4455-8A3D-099B503BD3F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22DAC9C4-CC27-4455-8A3D-099B503BD3F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CB53B0D-85D5-43E2-9F47-EEE42C1514AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CB53B0D-85D5-43E2-9F47-EEE42C1514AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CB53B0D-85D5-43E2-9F47-EEE42C1514AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CB53B0D-85D5-43E2-9F47-EEE42C1514AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
