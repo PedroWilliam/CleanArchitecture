@@ -1,5 +1,6 @@
 ﻿using Reservation.Application.Abstractions.Messaging;
 using Reservation.Application.Abstractions.Provider;
+using Reservation.Application.Exceptions;
 using Reservation.Domain.Abstractions;
 using Reservation.Domain.Apartments;
 using Reservation.Domain.Bookings;
@@ -54,17 +55,24 @@ internal sealed class ReserveBookingCommandHandler : ICommandHandler<ReserveBook
             return Result.Failure<Guid>(BookingErrors.Overlap);
         }
 
-        var booking = Booking.Reserve(
-            apartment,
-            user.Id,
-            duration,
-            _dateTimeProvider.UtcNow,
-            _pricingService);
+        try
+        {
+            var booking = Booking.Reserve(
+                apartment,
+                user.Id,
+                duration,
+                _dateTimeProvider.UtcNow,
+                _pricingService);
 
-        _bookingRepository.Add(booking);
+            _bookingRepository.Add(booking);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return booking.Id;
+            return booking.Id;
+        }
+        catch (ConcurrencyException)
+        {
+            return Result.Failure<Guid>(BookingErrors.Overlap);
+        }
     }
 }
