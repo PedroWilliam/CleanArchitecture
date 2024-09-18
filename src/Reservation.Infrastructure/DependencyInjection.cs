@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using Reservation.Domain.Abstractions;
 using Reservation.Domain.Apartments;
 using Reservation.Domain.Bookings;
 using Reservation.Domain.Users;
+using Reservation.Infrastructure.Authentication;
 using Reservation.Infrastructure.Data;
 using Reservation.Infrastructure.Email;
 using Reservation.Infrastructure.Providers;
@@ -22,8 +24,23 @@ public static class DependencyInjection
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
         services.AddTransient<IEmailService, EmailService>();
 
+        AddPersistence(services, configuration);
+
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer();
+
+        services.Configure<AuthenticationOptions>(configuration.GetSection("Authentication"));
+
+        services.ConfigureOptions<JwtBearerOptionsSetup>();
+
+        return services;
+    }
+
+    private static void AddPersistence(IServiceCollection services, IConfiguration configuration)
+    {
         var connectionString = configuration.GetConnectionString("DefaultDatabase")
-            ?? throw new ArgumentNullException(nameof(configuration));
+                    ?? throw new ArgumentNullException(nameof(configuration));
 
         services.AddDbContext<ApplicationDbContext>(options =>
         {
@@ -34,13 +51,11 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IApartmentRepository, ApartmentRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
-        services.AddScoped<IUnitOfWork>(sp=>sp.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
         services.AddSingleton<ISqlConnectionFactory>(_ =>
             new SqlConnectionFactory(connectionString));
 
         SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
-
-        return services;
     }
 }
