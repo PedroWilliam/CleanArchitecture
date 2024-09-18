@@ -1,3 +1,4 @@
+using Reservation.Api.Extensions;
 using Reservation.Application;
 using Reservation.Infrastructure;
 
@@ -20,6 +21,9 @@ var app = builder.Build();
     {
         app.UseSwagger();
         app.UseSwaggerUI();
+
+        app.ApplyMigrations();
+        //app.SeedData();
     }
 
     app.UseHttpsRedirection();
