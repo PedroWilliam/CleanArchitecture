@@ -5,22 +5,22 @@ namespace Reservation.Infrastructure.Repositories;
 internal abstract class Repository<T>
     where T : Entity
 {
-    protected readonly ApplicationDbContext _dbContext;
+    protected readonly ApplicationDbContext DbContext;
 
     protected Repository(ApplicationDbContext dbContext)
     {
-        _dbContext = dbContext;
+        DbContext = dbContext;
     }
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _dbContext
+        return await DbContext
             .Set<T>()
             .FirstOrDefaultAsync(user => user.Id == id, cancellationToken);
     }
 
-    public void Add(T entity)
+    public virtual void Add(T entity)
     {
-        _dbContext.Add(entity);
+        DbContext.Add(entity);
     }
 }
