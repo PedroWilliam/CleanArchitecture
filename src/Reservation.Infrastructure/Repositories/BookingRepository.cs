@@ -22,7 +22,7 @@ internal sealed class BookingRepository : Repository<Booking>, IBookingRepositor
         DateRange duration,
         CancellationToken cancellationToken = default)
     {
-        return await _dbContext
+        return await DbContext
             .Set<Booking>()
             .AnyAsync(
                 booking =>
