@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Reservation.Application.Users.GetLoggedInUser;
 using Reservation.Application.Users.LogInUser;
 using Reservation.Application.Users.RegisterUser;
 
@@ -15,6 +16,17 @@ public class UsersController : ControllerBase
     public UsersController(ISender sender)
     {
         _sender = sender;
+    }
+
+    [HttpGet("me")]
+    [Authorize(Roles = Roles.Registered)]
+    public async Task<IActionResult> GetLoggedInUser(CancellationToken cancellationToken)
+    {
+        var query = new GetLoggedInUserQuery();
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return Ok(result.Value);
     }
 
     [AllowAnonymous]

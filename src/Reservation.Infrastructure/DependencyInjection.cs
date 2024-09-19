@@ -1,5 +1,7 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +15,14 @@ using Reservation.Domain.Apartments;
 using Reservation.Domain.Bookings;
 using Reservation.Domain.Users;
 using Reservation.Infrastructure.Authentication;
+using Reservation.Infrastructure.Authorization;
 using Reservation.Infrastructure.Data;
 using Reservation.Infrastructure.Email;
 using Reservation.Infrastructure.Providers;
 using Reservation.Infrastructure.Repositories;
+using AuthenticationOptions = Reservation.Infrastructure.Authentication.AuthenticationOptions;
+using AuthenticationService = Reservation.Infrastructure.Authentication.AuthenticationService;
+using IAuthenticationService = Reservation.Application.Abstractions.Authentication.IAuthenticationService;
 
 namespace Reservation.Infrastructure;
 public static class DependencyInjection
@@ -28,8 +34,31 @@ public static class DependencyInjection
 
         AddPersistence(services, configuration);
         AddAuthentication(services, configuration);
+        AddAuthorization(services);
 
         return services;
+    }
+
+    private static void AddPersistence(IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("DefaultDatabase")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+
+        services.AddDbContext<ApplicationDbContext>(options =>
+        {
+            options.UseNpgsql(connectionString)
+                .UseSnakeCaseNamingConvention();
+        });
+
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IApartmentRepository, ApartmentRepository>();
+        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
+
+        services.AddSingleton<ISqlConnectionFactory>(_ =>
+            new SqlConnectionFactory(connectionString));
+
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
     }
 
     private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
@@ -58,27 +87,17 @@ public static class DependencyInjection
             var keycloakOptions = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
             httpClient.BaseAddress = new Uri(keycloakOptions.TokenUrl);
         });
+
+        services.AddHttpContextAccessor();
+
+        services.AddScoped<IUserContext, UserContext>();
     }
 
-    private static void AddPersistence(IServiceCollection services, IConfiguration configuration)
+    private static void AddAuthorization(IServiceCollection services)
     {
-        var connectionString = configuration.GetConnectionString("DefaultDatabase")
-                    ?? throw new ArgumentNullException(nameof(configuration));
-
-        services.AddDbContext<ApplicationDbContext>(options =>
-        {
-            options.UseNpgsql(connectionString)
-                .UseSnakeCaseNamingConvention();
-        });
-
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IApartmentRepository, ApartmentRepository>();
-        services.AddScoped<IBookingRepository, BookingRepository>();
-        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
-
-        services.AddSingleton<ISqlConnectionFactory>(_ =>
-            new SqlConnectionFactory(connectionString));
-
-        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+        services.AddScoped<AuthorizationService>();
+        services.AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
+        services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
     }
 }
