@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Reservation.Application.Users.GetLoggedInUser;
 using Reservation.Application.Users.LogInUser;
 using Reservation.Application.Users.RegisterUser;
+using Reservation.Infrastructure.Authorization;
 
 namespace Reservation.Api.Controllers.Users;
 
@@ -19,7 +20,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("me")]
-    [Authorize(Roles = Roles.Registered)]
+    [HasPermission(Permissions.UsersRead)]
     public async Task<IActionResult> GetLoggedInUser(CancellationToken cancellationToken)
     {
         var query = new GetLoggedInUserQuery();
