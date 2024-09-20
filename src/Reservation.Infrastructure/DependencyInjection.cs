@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Reservation.Application.Abstractions.Authentication;
+using Reservation.Application.Abstractions.Caching;
 using Reservation.Application.Abstractions.Data;
 using Reservation.Application.Abstractions.Email;
 using Reservation.Application.Abstractions.Provider;
@@ -16,6 +17,7 @@ using Reservation.Domain.Bookings;
 using Reservation.Domain.Users;
 using Reservation.Infrastructure.Authentication;
 using Reservation.Infrastructure.Authorization;
+using Reservation.Infrastructure.Caching;
 using Reservation.Infrastructure.Data;
 using Reservation.Infrastructure.Email;
 using Reservation.Infrastructure.Providers;
@@ -35,6 +37,7 @@ public static class DependencyInjection
         AddPersistence(services, configuration);
         AddAuthentication(services, configuration);
         AddAuthorization(services);
+        AddCaching(services, configuration);
 
         return services;
     }
@@ -99,5 +102,15 @@ public static class DependencyInjection
         services.AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
         services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+    }
+
+    private static void AddCaching(IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("Cache") ??
+                               throw new ArgumentNullException(nameof(configuration));
+
+        services.AddStackExchangeRedisCache(options => options.Configuration = connectionString);
+
+        services.AddSingleton<ICacheService, CacheService>();
     }
 }
