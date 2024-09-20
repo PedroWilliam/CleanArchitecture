@@ -1,16 +1,22 @@
 ﻿using Dapper;
+using Reservation.Application.Abstractions.Authentication;
 using Reservation.Application.Abstractions.Data;
 using Reservation.Application.Abstractions.Messaging;
 using Reservation.Domain.Abstractions;
+using Reservation.Domain.Bookings;
 
 namespace Reservation.Application.Bookings.GetBooking;
 internal sealed class GetBookingQueryHandler : IQueryHandler<GetBookingQuery, BookingResponse>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
+    private readonly IUserContext _userContext;
 
-    public GetBookingQueryHandler(ISqlConnectionFactory connectionFactory)
+    public GetBookingQueryHandler(
+        ISqlConnectionFactory connectionFactory,
+        IUserContext userContext)
     {
         _sqlConnectionFactory = connectionFactory;
+        _userContext = userContext;
     }
 
     public async Task<Result<BookingResponse>> Handle(GetBookingQuery request, CancellationToken cancellationToken)
@@ -45,6 +51,11 @@ internal sealed class GetBookingQueryHandler : IQueryHandler<GetBookingQuery, Bo
             cancellationToken: cancellationToken);
 
         var booking = await connection.QueryFirstOrDefaultAsync<BookingResponse>(command);
+
+        if (booking is null || booking.UserId != _userContext.UserId)
+        {
+            return Result.Failure<BookingResponse>(BookingErrors.NotFound);
+        }
 
         return booking;
     }
