@@ -331,15 +331,10 @@ namespace Reservation.Infrastructure.Migrations
                                 .HasColumnType("text")
                                 .HasColumnName("address_state");
 
-                            b1.Property<string>("StreetName")
+                            b1.Property<string>("Street")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasColumnName("address_street_name");
-
-                            b1.Property<string>("StreetNumber")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("address_street_number");
+                                .HasColumnName("address_street");
 
                             b1.Property<string>("ZipCode")
                                 .IsRequired()
