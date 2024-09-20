@@ -1,9 +1,12 @@
 using Reservation.Api.Extensions;
 using Reservation.Application;
 using Reservation.Infrastructure;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 {
+    builder.Host.UseSerilog((context, loggerConfig) =>
+        loggerConfig.ReadFrom.Configuration(context.Configuration));
 
     builder.Services.AddControllers();
 
@@ -27,6 +30,10 @@ var app = builder.Build();
     }
 
     app.UseHttpsRedirection();
+
+    app.UseRequestContextLogging();
+
+    app.UseSerilogRequestLogging();
 
     app.UseCustomExceptionHandler();
 
