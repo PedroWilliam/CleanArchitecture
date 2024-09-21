@@ -5,7 +5,8 @@ using Reservation.Domain.Abstractions;
 using Reservation.Domain.Bookings;
 
 namespace Reservation.Application.Apartments.SearchApartments;
-internal sealed class SearchApartmentsQueryHandler : IQueryHandler<SearchApartmentsQuery, IReadOnlyList<ApartmendResponse>>
+
+internal sealed class SearchApartmentsQueryHandler : IQueryHandler<SearchApartmentsQuery, IReadOnlyList<ApartmentResponse>>
 {
     private static readonly int[] ActiveBookingStatuses =
     {
@@ -21,16 +22,16 @@ internal sealed class SearchApartmentsQueryHandler : IQueryHandler<SearchApartme
         _sqlConnectionFactory = sqlConnectionFactory;
     }
 
-    public async Task<Result<IReadOnlyList<ApartmendResponse>>> Handle(SearchApartmentsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyList<ApartmentResponse>>> Handle(SearchApartmentsQuery request, CancellationToken cancellationToken)
     {
         if (request.StartDate > request.EndDate)
         {
-            return new List<ApartmendResponse>();
+            return new List<ApartmentResponse>();
         }
 
         using var connection = _sqlConnectionFactory.CreateConnection();
 
-        var sql = """
+        const string sql = """
             SELECT
                 a.id AS Id,
                 a.name AS Name,
@@ -55,20 +56,22 @@ internal sealed class SearchApartmentsQueryHandler : IQueryHandler<SearchApartme
             )
             """;
 
-        var apartments = await connection.QueryAsync<ApartmendResponse, AddressResponse, ApartmendResponse>(
-            sql,
-            (apartment, address) =>
-            {
-                apartment.Address = address;
-                return apartment;
-            },
-            new
-            {
-                request.StartDate,
-                request.EndDate,
-                ActiveBookingStatuses
-            },
-            splitOn: "Country");
+        var apartments = await connection
+            .QueryAsync<ApartmentResponse, AddressResponse, ApartmentResponse>(
+                sql,
+                (apartment, address) =>
+                {
+                    apartment.Address = address;
+
+                    return apartment;
+                },
+                new
+                {
+                    request.StartDate,
+                    request.EndDate,
+                    ActiveBookingStatuses
+                },
+                splitOn: "Country");
 
         return apartments.ToList();
     }
