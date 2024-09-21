@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Asp.Versioning;
+using Dapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -40,6 +41,7 @@ public static class DependencyInjection
         AddAuthorization(services);
         AddCaching(services, configuration);
         AddHealthChecks(services, configuration);
+        AddApiVersioning(services);
 
         return services;
     }
@@ -69,9 +71,8 @@ public static class DependencyInjection
 
     private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
     {
-        services
-                    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer();
 
         services.Configure<AuthenticationOptions>(configuration.GetSection("Authentication"));
 
@@ -123,5 +124,22 @@ public static class DependencyInjection
             .AddNpgSql(configuration.GetConnectionString("DefaultDatabase")!)
             .AddRedis(configuration.GetConnectionString("Cache")!)
             .AddUrlGroup(new Uri(configuration["Keycloak:BaseUrl"]!), HttpMethod.Get, "authentication");
+    }
+
+    private static void AddApiVersioning(IServiceCollection services)
+    {
+        services
+            .AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1);
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            })
+            .AddMvc()
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'V";
+                options.SubstituteApiVersionInUrl = true;
+            });
     }
 }

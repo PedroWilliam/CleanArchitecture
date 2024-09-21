@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -9,7 +10,8 @@ namespace Reservation.Api.Controllers.Bookings;
 
 [Authorize]
 [ApiController]
-[Route("api/bookings")]
+[ApiVersion(ApiVersions.V1)]
+[Route("api/v{version:apiVersion}/bookings")]
 public class BookingsController : ControllerBase
 {
     private readonly ISender _sender;

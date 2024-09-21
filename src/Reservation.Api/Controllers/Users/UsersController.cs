@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Reservation.Application.Users.GetLoggedInUser;
@@ -9,7 +10,8 @@ using Reservation.Infrastructure.Authorization;
 namespace Reservation.Api.Controllers.Users;
 
 [ApiController]
-[Route("api/users")]
+[ApiVersion(ApiVersions.V1)]
+[Route("api/v{version:apiVersion}/users")]
 public class UsersController : ControllerBase
 {
     private readonly ISender _sender;

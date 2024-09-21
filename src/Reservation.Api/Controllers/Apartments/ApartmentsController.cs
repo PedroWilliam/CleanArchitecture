@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Reservation.Application.Apartments.SearchApartments;
@@ -7,7 +8,8 @@ namespace Reservation.Api.Controllers.Apartments;
 
 [Authorize]
 [ApiController]
-[Route("api/apartments")]
+[ApiVersion(ApiVersions.V1)]
+[Route("api/v{version:apiVersion}/apartments")]
 public class ApartmentsController : ControllerBase
 {
     private readonly ISender _sender;
