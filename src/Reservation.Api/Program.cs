@@ -1,3 +1,5 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Reservation.Api.Extensions;
 using Reservation.Application;
 using Reservation.Infrastructure;
@@ -42,6 +44,11 @@ var app = builder.Build();
     app.UseAuthorization();
 
     app.MapControllers();
+
+    app.MapHealthChecks("health", new HealthCheckOptions
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
 
     app.Run();
 }
