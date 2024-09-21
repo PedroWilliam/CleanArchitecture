@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Reservation.Domain.Abstractions;
+
 public class Result
 {
-    protected internal Result(bool isSuccess, Error error)
+    public Result(bool isSuccess, Error error)
     {
         if (isSuccess && error != Error.None)
         {
@@ -40,7 +41,7 @@ public class Result<TValue> : Result
 {
     private readonly TValue? _value;
 
-    protected internal Result(TValue? value, bool isSuccess, Error error)
+    public Result(TValue? value, bool isSuccess, Error error)
         : base(isSuccess, error)
     {
         _value = value;
