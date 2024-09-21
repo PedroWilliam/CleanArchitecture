@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Reservation.Domain.Abstractions;
+﻿using Reservation.Domain.Abstractions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Reservation.Infrastructure.Repositories;
+
 internal abstract class Repository<T>
     where T : Entity
 {
@@ -12,7 +13,9 @@ internal abstract class Repository<T>
         DbContext = dbContext;
     }
 
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<T?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
     {
         return await DbContext
             .Set<T>()

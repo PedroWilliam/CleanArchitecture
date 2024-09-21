@@ -1,10 +1,11 @@
 ﻿using Reservation.Domain.Abstractions;
 
 namespace Reservation.Domain.Bookings;
+
 public static class BookingErrors
 {
     public static Error NotFound = new(
-        "Booking.NotFound",
+        "Booking.Found",
         "The booking with the specified identifier was not found");
 
     public static Error Overlap = new(
@@ -16,7 +17,7 @@ public static class BookingErrors
         "The booking is not pending");
 
     public static Error NotConfirmed = new(
-        "Booking.NotConfirmed",
+        "Booking.NotReserved",
         "The booking is not confirmed");
 
     public static Error AlreadyStarted = new(

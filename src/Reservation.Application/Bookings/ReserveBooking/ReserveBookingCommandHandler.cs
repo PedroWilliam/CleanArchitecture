@@ -7,13 +7,14 @@ using Reservation.Domain.Bookings;
 using Reservation.Domain.Users;
 
 namespace Reservation.Application.Bookings.ReserveBooking;
+
 internal sealed class ReserveBookingCommandHandler : ICommandHandler<ReserveBookingCommand, Guid>
 {
-    private IUserRepository _userRepository;
-    private IApartmentRepository _apartmentRepository;
-    private IBookingRepository _bookingRepository;
-    private IUnitOfWork _unitOfWork;
-    private PricingService _pricingService;
+    private readonly IUserRepository _userRepository;
+    private readonly IApartmentRepository _apartmentRepository;
+    private readonly IBookingRepository _bookingRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly PricingService _pricingService;
     private readonly IDateTimeProvider _dateTimeProvider;
 
     public ReserveBookingCommandHandler(

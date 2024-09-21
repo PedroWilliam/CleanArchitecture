@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
-using Reservation.Application.Abstractions.Messaging;
 using Reservation.Domain.Abstractions;
 using Serilog.Context;
 

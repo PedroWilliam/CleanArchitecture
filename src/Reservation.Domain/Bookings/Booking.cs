@@ -4,9 +4,10 @@ using Reservation.Domain.Bookings.Events;
 using Reservation.Domain.Shared;
 
 namespace Reservation.Domain.Bookings;
+
 public sealed class Booking : Entity
 {
-    public Booking(
+    private Booking(
         Guid id,
         Guid apartmentId,
         Guid userId,
@@ -16,8 +17,7 @@ public sealed class Booking : Entity
         Money amenitiesUpCharge,
         Money totalPrice,
         BookingStatus status,
-        DateTime createdOnUtc
-        )
+        DateTime createdOnUtc)
         : base(id)
     {
         ApartmentId = apartmentId;
@@ -33,7 +33,6 @@ public sealed class Booking : Entity
 
     private Booking()
     {
-        
     }
 
     public Guid ApartmentId { get; private set; }

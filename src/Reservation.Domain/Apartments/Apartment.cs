@@ -2,6 +2,7 @@
 using Reservation.Domain.Shared;
 
 namespace Reservation.Domain.Apartments;
+
 public sealed class Apartment : Entity
 {
     public Apartment(
@@ -11,8 +12,7 @@ public sealed class Apartment : Entity
         Address address,
         Money price,
         Money cleaningFee,
-        List<Amenity> amenities
-        )
+        List<Amenity> amenities)
         : base(id)
     {
         Name = name;
@@ -25,7 +25,6 @@ public sealed class Apartment : Entity
 
     private Apartment()
     {
-
     }
 
     public Name Name { get; private set; }
@@ -37,8 +36,8 @@ public sealed class Apartment : Entity
     public Money Price { get; private set; }
 
     public Money CleaningFee { get; private set; }
-    
+
     public DateTime? LastBookedOnUtc { get; internal set; }
 
-    public List<Amenity> Amenities { get; private set; }
+    public List<Amenity> Amenities { get; private set; } = new();
 }
