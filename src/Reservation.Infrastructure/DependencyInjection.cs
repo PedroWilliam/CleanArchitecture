@@ -14,6 +14,7 @@ using Reservation.Application.Abstractions.Provider;
 using Reservation.Domain.Abstractions;
 using Reservation.Domain.Apartments;
 using Reservation.Domain.Bookings;
+using Reservation.Domain.Reviews;
 using Reservation.Domain.Users;
 using Reservation.Infrastructure.Authentication;
 using Reservation.Infrastructure.Authorization;
@@ -56,6 +57,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IApartmentRepository, ApartmentRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
         services.AddSingleton<ISqlConnectionFactory>(_ =>
