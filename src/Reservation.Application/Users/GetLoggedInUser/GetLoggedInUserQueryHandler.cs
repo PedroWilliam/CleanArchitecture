@@ -25,7 +25,7 @@ internal sealed class GetLoggedInUserQueryHandler
     {
         using var connection = _sqlConnectionFactory.CreateConnection();
 
-        const string sql = """
+        var command = new CommandDefinition("""
             SELECT
                 id AS Id,
                 first_name AS FirstName,
@@ -33,14 +33,14 @@ internal sealed class GetLoggedInUserQueryHandler
                 email AS Email
             FROM users
             WHERE identity_id = @IdentityId
-            """;
-
-        var user = await connection.QuerySingleAsync<UserResponse>(
-            sql,
+            """,
             new
             {
                 _userContext.IdentityId
-            });
+            },
+            cancellationToken: cancellationToken);
+
+        var user = await connection.QuerySingleAsync<UserResponse>(command);
 
         return user;
     }
