@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Quartz;
 using Reservation.Application.Abstractions.Authentication;
 using Reservation.Application.Abstractions.Caching;
 using Reservation.Application.Abstractions.Data;
@@ -22,6 +23,7 @@ using Reservation.Infrastructure.Authorization;
 using Reservation.Infrastructure.Caching;
 using Reservation.Infrastructure.Data;
 using Reservation.Infrastructure.Email;
+using Reservation.Infrastructure.Outbox;
 using Reservation.Infrastructure.Providers;
 using Reservation.Infrastructure.Repositories;
 using AuthenticationOptions = Reservation.Infrastructure.Authentication.AuthenticationOptions;
@@ -42,6 +44,7 @@ public static class DependencyInjection
         AddCaching(services, configuration);
         AddHealthChecks(services, configuration);
         AddApiVersioning(services);
+        AddBackgroundJobs(services, configuration);
 
         return services;
     }
@@ -141,5 +144,16 @@ public static class DependencyInjection
                 options.GroupNameFormat = "'v'V";
                 options.SubstituteApiVersionInUrl = true;
             });
+    }
+
+    private static void AddBackgroundJobs(IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<OutboxOptions>(configuration.GetSection("Outbox"));
+
+        services.AddQuartz();
+
+        services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
+        services.ConfigureOptions<ProcessOutboxMessagesJobSetup>();
     }
 }
