@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Reservation.Domain\Reservation.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Reservation.Application.UnitTests" />
+  </ItemGroup>
+
 </Project>
